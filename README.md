@@ -1,3 +1,56 @@
+This modification of mpv-discordRPC provides a large modification of the status information displayed to display more useful information.
+
+---
+
+## Previews
+
+| Type | Image |
+| :-: | :-: |
+| Paused | ![Paused](images/Paused.png)
+| Playing | ![Playing](images/Playing.png)
+| Audio Only | ![AudioOnly](images/AudioOnly.png)
+| Playing (2) | ![Playing2](images/Playing2.png)
+
+Note: Displaying timecode in hours of length is broken at the moment (incomplete) so the status will not display for those files.
+
+---
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
+ ‍
+ 
 <center><img align="right" src="images/buffering_mpv_stream.png"></center>
 <h1 align="center"><a href="https://github.com/cniw/mpv-discordRPC">mpv-discordRPC</a></h1>
 <p align="center"><b>Discord Rich Presence intergation for mpv Media Player</b></p>
