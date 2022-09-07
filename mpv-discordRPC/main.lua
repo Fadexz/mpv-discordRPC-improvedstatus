@@ -42,9 +42,11 @@ options.read_options(o)
 -- set `script_info`
 local script_info = {
 	name = mp.get_script_name(),
+--[[
 	description = "Discord Rich Presence integration for mpv Media Player",
 	upstream = "https://github.com/cniw/mpv-discordRPC",
-	version = "1.4.1-UNKNOWN",
+	version = "1.4.1",
+--]]
 }
 
 -- set `mpv_version`
@@ -91,7 +93,7 @@ local function main()
 		smallImageText = "Paused"
 		smallImageKey = "player_pause"
 	elseif play then
-		state = "(Playing) "
+		state = ""  -- Playing
 		smallImageKey = "player_play"
 		smallImageText = "Playing"
 	end
@@ -115,7 +117,7 @@ local function main()
 			elseif loopPlaylist ~= "" then
 				loop = loopPlaylist
 			else
-				loop = "disabled"
+				loop = "Disabled"
 			end
 			loop = (" - Loop: %s"):format(loop)
 		end
@@ -128,7 +130,7 @@ local function main()
 	local timeUp = timeNow + timeRemaining
 	-- set `largeImageKey` and `largeImageText`
 	local largeImageKey = "mpv"
-	local largeImageText = "mpv Media Player"
+	local largeImageText = "mpv"
 	-- set `mpv_version`
 	if o.mpv_version == "yes" then
 		largeImageText = mpv_version
@@ -244,10 +246,10 @@ local function main()
 		end
 		-- run Rich Presence with pypresence
 		local todo = idle and "idle" or "not-idle"
-		local command = ('python3 "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s"'):format(pythonPath, todo, presence.state, presence.details, math.floor(startTime), math.floor(timeUp), presence.largeImageKey, presence.largeImageText, presence.smallImageKey, presence.smallImageText, o.periodic_timer)
+		local command = ('python "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s"'):format(pythonPath, todo, presence.state, presence.details, math.floor(startTime), math.floor(timeUp), presence.largeImageKey, presence.largeImageText, presence.smallImageKey, presence.smallImageText, o.periodic_timer)
 		mp.register_event('shutdown', function()
 			todo = "shutdown"
-			command = ('python3 "%s" "%s"'):format(pythonPath, todo)
+			command = ('python "%s" "%s"'):format(pythonPath, todo)
 			io.popen(command)
 			os.exit()
 		end)
@@ -258,8 +260,10 @@ local function main()
 end
 
 -- print script info
+--[[
 msg.info(string.format(script_info.description))
 msg.info(string.format("Upstream: %s", script_info.upstream))
+--]]
 msg.info(string.format("Version: %s", script_info.version))
 
 -- print option values

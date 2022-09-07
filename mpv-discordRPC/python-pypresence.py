@@ -14,7 +14,7 @@ details = str(sys.argv[3]) if len(sys.argv) > 3 else "details = No file"
 start = int(sys.argv[4]) if len(sys.argv) > 4 else int(time.time())
 end = int(sys.argv[5]) if len(sys.argv) > 5 else int(time.time() + 60)
 large_image = str(sys.argv[6]) if len(sys.argv) > 6 else "mpv"
-large_text = str(sys.argv[7]) if len(sys.argv) > 7 else "large_text = mpv Media Player"
+large_text = str(sys.argv[7]) if len(sys.argv) > 7 else "large_text = mpv"
 small_image = str(sys.argv[8]) if len(sys.argv) > 8 else "player_stop"
 small_text = str(sys.argv[9]) if len(sys.argv) > 9 else "small_text = Idle"
 periodic_timer = int(sys.argv[10]) if len(sys.argv) > 10 else 15
