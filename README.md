@@ -6,10 +6,11 @@ This modification of mpv-discordRPC provides a large modification of the status 
 
 | Type | Image |
 | :-: | :-: |
+| Playing (Profile) | ![Playing Profile](images/PlayingProfile.png)
+| Playing (Pop Out) | ![Playing Pop Out](images/PlayingPopOut.png)
 | Paused | ![Paused](images/Paused.png)
-| Playing | ![Playing](images/Playing.png)
-| Audio Only | ![AudioOnly](images/AudioOnly.png)
-| Playing (2) | ![Playing2](images/Playing2.png)
+| Audio Only | ![Audio Only](images/AudioOnly.png)
+| Playing (2) | ![Playing (2)](images/Playing2.png)
 
 Note: Displaying timecode in hours of length is broken at the moment (incomplete) so the status will not display for those files.
 
