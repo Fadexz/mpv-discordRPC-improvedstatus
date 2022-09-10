@@ -8,9 +8,9 @@ This modification of mpv-discordRPC provides a large modification of the status 
 | :-: | :-: |
 | Playing (Profile) | ![Playing Profile](images/PlayingProfile.png)
 | Playing (Pop Out) | ![Playing Pop Out](images/PlayingPopOut.png)
-| Paused | ![Paused](images/Paused.png)
-| Audio Only | ![Audio Only](images/AudioOnly.png)
-| Playing (2) | ![Playing (2)](images/Playing2.png)
+| Paused | ![Paused](images/PausedProfile.png)
+| Audio Only | ![Audio Only](images/AudioOnlyProfile.png)
+| Playing (2) | ![Playing (2)](images/PlayingProfile2.png)
 
 Note: Displaying timecode in hours of length is broken at the moment (incomplete) so the status will not display for those files.
 
