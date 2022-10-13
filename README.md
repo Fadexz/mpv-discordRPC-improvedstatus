@@ -14,6 +14,10 @@ This modification of mpv-discordRPC provides a large modification of the status 
 
 Note: Displaying timecode in hours of length is broken at the moment (incomplete) so the status will not display for those files.
 
+## Installation
+
+Place 
+
 ---
  ‍
  
