@@ -20,7 +20,7 @@ Note: Displaying timecode in hours of length is broken at the moment (incomplete
 
 ## Installation
 
-- Simply place the 'mpv-discordRPC' folder in your 'scripts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv`)
+- Simply place the 'mpv-discordRPC' folder in your 'scripts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\scripts`)
 - Place the 'mpv_discordRPC.conf' in your 'script-opts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\script-opts`)
  
  ‍
