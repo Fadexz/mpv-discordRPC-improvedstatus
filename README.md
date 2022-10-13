@@ -1,6 +1,9 @@
 This modification of mpv-discordRPC provides a large modification of the status information displayed to display more useful information.
 
+
 ---
+ 
+ ‍
 
 ## Previews
 
@@ -13,11 +16,15 @@ This modification of mpv-discordRPC provides a large modification of the status 
 | Playing (2) | ![Playing (2)](images/PlayingProfile2.png)
 
 Note: Displaying timecode in hours of length is broken at the moment (incomplete) so the status will not display for those files.
+ 
+ ‍
 
 ## Installation
 
-Place 
-
+- Simply place the 'mpv-discordRPC' folder in your 'scripts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv`)
+- Place the 'mpv_discordRPC.conf' in your 'script-opts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\script-opts`)
+ 
+ ‍
 ---
  ‍
  
