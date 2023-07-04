@@ -26,7 +26,7 @@ This modification of mpv-discordRPC provides a large modification of the status 
 
 ## Optional
 
-BetterDiscord Theme for multi-line, larger images, and rounded corner status
+BetterDiscord Theme (for Discord) for multi-line status, larger images, and rounded corners if you are interested
 https://github.com/Fadexz/EnhancedActivity‍
  ‍
  
