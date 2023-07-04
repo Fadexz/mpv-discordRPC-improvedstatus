@@ -13,7 +13,7 @@ This modification of mpv-discordRPC provides a large modification of the status 
 | Playing (Pop Out) | ![Playing Pop Out](images/PlayingPopOut.png)
 | Paused | ![Paused](images/PausedProfile.png)
 | Audio Only | ![Audio Only](images/AudioOnlyProfile.png)
-| Playing (Pop Out)\n(With Theme and GIF Image) | ![Playing Profile](images/PlayingPopOut2.gif)
+| Playing (Pop Out) (With Theme and GIF Image) | ![Playing Profile](images/PlayingPopOut2.gif)
  
  ‍
 
