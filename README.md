@@ -26,7 +26,8 @@ Note: Displaying timecode in hours of length is broken at the moment (incomplete
  
  ‍
 
-# Optional
+## Optional
+
 BetterDiscord Theme for multi-line, larger images, and rounded corner status
 https://github.com/Fadexz/EnhancedActivity‍
  ‍
