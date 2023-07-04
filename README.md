@@ -25,12 +25,19 @@ Note: Displaying timecode in hours of length is broken at the moment (incomplete
 - Place the 'mpv_discordRPC.conf' in your 'script-opts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\script-opts`)
  
  ‍
+
+
+BetterDiscord Theme for multi-line, larger images, and rounded corner status
+https://github.com/Fadexz/EnhancedActivity‍
+ ‍
+ 
 ---
  ‍
  
- ‍## (Optional) BetterDiscord Theme for multi-line, larger images, and rounded corner status
  
- https://github.com/Fadexz/EnhancedActivity
+ ‍
+
+
  
  ‍
  
