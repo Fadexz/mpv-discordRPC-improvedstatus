@@ -10,10 +10,10 @@ This modification of mpv-discordRPC provides a large modification of the status 
 | Type | Image |
 | :-: | :-: |
 | Playing (Profile) | ![Playing Profile](images/PlayingProfile.png)
-| Playing (Pop Out) [Updated] | ![Playing Profile](images/PlayingPopOut2.gif)
 | Playing (Pop Out) | ![Playing Pop Out](images/PlayingPopOut.png)
 | Paused | ![Paused](images/PausedProfile.png)
 | Audio Only | ![Audio Only](images/AudioOnlyProfile.png)
+| Playing (Pop Out) (With Theme and GIF image) | ![Playing Profile](images/PlayingPopOut2.gif)
  
  ‍
 
