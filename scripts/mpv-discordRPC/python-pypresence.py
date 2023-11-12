@@ -5,7 +5,7 @@ import sys
 import time
 import pypresence
 
-client_id = "448016723057049601"
+client_id = "1070587101088845875"  #448016723057049601
 pid = 9999
 
 todo = str(sys.argv[1]) if len(sys.argv) > 1 else "shutdown"

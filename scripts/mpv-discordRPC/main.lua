@@ -1,7 +1,4 @@
 -- Discord Rich Presence integration for mpv Media Player
---
--- Please consult the readme for information about usage and configuration:
--- https://github.com/cniw/mpv-discordRPC
 
 
 local options = require 'mp.options'
@@ -9,16 +6,13 @@ local msg = require 'mp.msg'
 
 -- set [options]
 local o = {
-	rpc_wrapper = "lua-discordGameSDK",
+	rpc_wrapper = "lua-discordRPC",
 	-- Available option, to set `rpc_wrapper`:
-	-- * lua-discordGameSDK
+	-- * lua-discordGameSDK - Doesn't currently work
 	-- * lua-discordRPC
 	-- * python-pypresence
 	periodic_timer = 15,
-	-- Recommendation value, to set `periodic_timer`:
-	-- value >= 1 second, if use lua-discordRPC,
-	-- value >= 3 second, if use pypresence (for the python3::asyncio process),
-	-- value <= 15 second, because discord-rpc updates every 15 seconds.
+	-- discord-rpc updates every 15 seconds (server-side)
 	playlist_info = "yes",
 	-- Valid value to set `playlist_info`: (yes|no)
 	hide_url = "no",
@@ -49,6 +43,9 @@ local startTime = os.time(os.date("*t"))
 local function main()
 	-- set `details`
 	local details = mp.get_property("media-title")
+	if details ~= nil and (details == "index.m3u8" or string.match(details, "watch%?v=([a-zA-Z0-9-_]+)") ~= nil) then
+		details = ""
+	end
 	local metadataTitle = mp.get_property_native("metadata/by-key/Title")
 	local metadataArtist = mp.get_property_native("metadata/by-key/Artist")
 	local metadataAlbum = mp.get_property_native("metadata/by-key/Album")
@@ -58,17 +55,20 @@ local function main()
 		details = metadataTitle
 	end
 	if metadataArtist ~= nil then
-		details = ("%s by %s"):format(details, metadataArtist)
+		details = ("%s by %s"):format(details, metadataArtist:gsub(";", ", "))
 	end
-	if metadataAlbum ~= nil then
+	if metadataAlbum ~= nil and not string.match(metadataAlbum, " - Single$") --[[and song ()--]] then
 		details = ("%s on %s"):format(details, metadataAlbum)
 	end
 	if metadataGenre ~= nil then
 		details = ("%s [%s]"):format(details, metadataGenre)
 	end
 	if metadataDate ~= nil then
-		details = ("%s (%s)"):format(details, string.match(metadataDate, "(%d%d%d%d)"))
-	end
+        local year = string.match(metadataDate, "(%d%d%d%d)")
+        if year ~= nil then
+            details = ("%s (%s)"):format(details, year)
+        end
+    end
 	if details == nil then
 		details = "No file"
 	end
@@ -80,7 +80,7 @@ local function main()
 	local pause = mp.get_property_bool("pause")
 	local play = coreIdle and false or true
 	if idle then
-		state = "(Idle)"
+		state = ""
 		smallImageKey = "player_stop"
 		smallImageText = "Idle"
 	elseif pausedFC then
@@ -91,6 +91,7 @@ local function main()
 		state = ""
 		smallImageText = "Paused"
 		smallImageKey = "player_pause"
+		
 	elseif play then
 		state = ""  -- Playing
 		smallImageKey = "player_play"
@@ -99,30 +100,46 @@ local function main()
 	if not idle then
 		-- set `playlist_info`
 		local playlist = ""
-		if o.playlist_info == "yes" and mp.get_property_number("playlist-count") > 1 then
-			playlist = (" - Playlist: [%s/%s]"):format(mp.get_property("playlist-pos-1"), mp.get_property("playlist-count"))
+		if o.playlist_info == "yes" and mp.get_property_number("playlist-count") >= 2 then
+			playlist = (" [%s/%s]"):format(mp.get_property_number("playlist-pos-1"), mp.get_property_number("playlist-count"))
 		end
 		-- set `loop_info`
 		local loop = ""
-		if o.loop_info == "yes" and mp.get_property_bool("loop-file") ~= false then
-			local loopFile = mp.get_property_bool("loop-file") == false and "" or "file"
-			local loopPlaylist = mp.get_property_bool("loop-playlist") == false and "" or "playlist"
+		if o.loop_info == "yes" then
+			local loopFile = mp.get_property_bool("loop-file") == false and "" or "File"
+			local loopPlaylist = mp.get_property_bool("loop-playlist") == false and "" or "Playlist"
 			if loopFile ~= "" then
-				if loopPlaylist ~= "" then
-					loop = ("%s, %s"):format(loopFile, loopPlaylist)
-				else
-					loop = loopFile
-				end
+				loop = (" — Loop: %s"):format(loopFile)
 			elseif loopPlaylist ~= "" then
-				loop = loopPlaylist
-			else
-				loop = "Disabled"
+				loop = (" — Loop: %s"):format(loopPlaylist)
 			end
-			loop = (" - Loop: %s"):format(loop)
 		end
 		state = state .. mp.get_property("options/term-status-msg")
 		smallImageText = ("%s%s%s"):format(smallImageText, playlist, loop)
 	end
+	
+	local playlist = mp.get_property_native("playlist")
+	if playlist ~= nil then
+		for i, item in ipairs(playlist) do
+			if item.current then
+				if playlist[i+1] ~= nil then
+					--[[
+					if playlist[i+1].title ~= nil then
+						smallImageText = smallImageText .. " — \nNext: " .. playlist[i+1].title
+					else
+					--]]
+					if playlist[i+1].filename ~= nil then
+						local filename = playlist[i+1].filename:match("([^\\]-)%.%w+$")
+						if filename ~= nil then
+							smallImageText = smallImageText .. " — \nNext: " .. filename:gsub("_", " ")
+						end
+					end
+				end
+				break
+			end
+		end
+	end
+
 	-- set time
 	local timeNow = os.time(os.date("*t"))
 	local timeRemaining = os.time(os.date("*t", mp.get_property("playtime-remaining")))
@@ -135,41 +152,93 @@ local function main()
 		largeImageText = mpv_version
 	end
 	-- set `cover_art`
+	-- Should be able to smartly match the correct album art or track title
+	-- The only instance when it shouldn't work correctly is when there are two tracks in the same album but
+	-- there is no album tag and they weren't an exact title match then it will use the first track title
+	-- Smarter matching could be used to check if it is very similar like a remix title but with slightly different formatting when comparing
+	-- If it detects the song name without brackets then it will use that version, like the non-remix album art if it only finds the standard album
+	-- I don't think it will do well with separation characters in the title, it should maybe remove everything from it or split them and compare
 	if o.cover_art == "yes" then
 		local catalogs = require("catalogs")
+		local found_exact_title = false
+		local found_exact_album = false
 		for i in pairs(catalogs) do
 			local title = catalogs[i].title
-			for j in pairs(title) do
-				local lower_title = title[j] ~= nil and title[j]:lower() or ""
-				local lower_details = details ~= nil and details:lower() or ""
-				if lower_details:find(lower_title, 1, true) ~= nil then
-					local cover_id_or_url = catalogs[i].cover_id_or_url
-					if cover_id_or_url.match(cover_id_or_url, "^https?://[%w-_%.%?%.:%/%+=&]+$") then
-						largeImageKey = cover_id_or_url
-					else largeImageKey = ("cover_%s"):format(cover_id_or_url):gsub("[^%w%- ]", "_"):lower()
-					end
-					largeImageText = title[j]
-				end
-			end
 			local album = catalogs[i].album
-			for j in pairs(album) do
-				local lower_album = album[j] ~= nil and album[j]:lower() or ""
-				local lower_metadataAlbum = metadataAlbum ~= nil and metadataAlbum:lower() or ""
-				if lower_album == lower_metadataAlbum then
-					local artist = catalogs[i].artist
-					for k in pairs(artist) do
-						local lower_artist = artist[k] ~= nil and artist[k]:lower() or ""
-						local lower_metadataArtist = metadataArtist ~= nil and metadataArtist:lower() or ""
-						if lower_artist == lower_metadataArtist then
+			if not found_exact_title then
+				for j in pairs(title) do
+					local lower_title = title[j] ~= nil and title[j]:lower() or ""
+					local lower_metadataTitle = metadataTitle ~= nil and metadataTitle:lower() or ""
+					-- Check and use filename if there is no title tag
+					if (lower_metadataTitle == nil or lower_metadataTitle == "") and mp.get_property("filename") ~= nil then
+						lower_metadataTitle = mp.get_property("filename"):gsub("%.[^.]+$", ""):gsub("_", " "):lower()
+						for part in string.gmatch(lower_metadataTitle, '([^%-]+)') do
+							if part:gsub("’", "'"):match("^%s*(.-)%s*$") == lower_title:gsub("’", "'"):match("^%s*(.-)%s*$") then
+								lower_metadataTitle = lower_title
+							elseif part:gsub("ft.*$", ""):gsub("%(.*", ""):gsub("%[.*", ""):gsub("’", "'"):match("^%s*(.-)%s*$") == lower_title:gsub("ft.*$", ""):gsub("%(.*", ""):gsub("%[.*", ""):gsub("’", "'"):gsub("ft.*$", ""):match("^%s*(.-)%s*$") then
+								lower_metadataTitle = lower_title
+							end
+						end
+					end
+					-- Similar match
+					if lower_metadataTitle:gsub("%b()", ""):gsub("%b[]", ""):gsub("’", "'"):match("^%s*(.-)%s*$") == lower_title:gsub("%b()", ""):gsub("%b[]", ""):gsub("’", "'"):match("^%s*(.-)%s*$") then
+						local cover_id_or_url = catalogs[i].cover_id_or_url
+						if cover_id_or_url.match(cover_id_or_url, "^https?://[%w-_%.%?%.:%/%+=&]+$") then
+							largeImageKey = cover_id_or_url
+						else largeImageKey = ("cover_%s"):format(cover_id_or_url):gsub("[^%w%- ]", "_"):lower()
+						end
+						largeImageText = title[j]
+						-- Test - Show song album
+						if album[1] ~= nil and (metadataAlbum == nil or string.match(metadataAlbum, " - Single$") and not string.match(album[1], " - Single$") or metadataAlbum ~= nil and metadataAlbum ~= album[1]) then
+							largeImageText = largeImageText .. " — " .. album[1]
+						end
+						-- Exact match
+						if lower_metadataTitle:gsub("’", "'") == lower_title:gsub("’", "'") then
 							local cover_id_or_url = catalogs[i].cover_id_or_url
 							if cover_id_or_url.match(cover_id_or_url, "^https?://[%w-_%.%?%.:%/%+=&]+$") then
 								largeImageKey = cover_id_or_url
 							else largeImageKey = ("cover_%s"):format(cover_id_or_url):gsub("[^%w%- ]", "_"):lower()
 							end
-							largeImageText = album[j]
+							largeImageText = title[j]
+							found_exact_title = true
+							break
 						end
 					end
 				end
+			end
+			for v in ipairs(album) do
+				local lower_album = album[v] ~= nil and album[v]:lower() or ""
+				local lower_metadataAlbum = metadataAlbum ~= nil and metadataAlbum:lower() or ""
+				-- Check and use filename if there is no album tag
+				
+				if lower_metadataAlbum ~= "" and lower_album == lower_metadataAlbum then
+					local artist = catalogs[i].artist
+					for k in pairs(artist) do
+						local lower_artist = artist[k] ~= nil and artist[k]:lower() or ""
+						local lower_metadataArtist = metadataArtist ~= nil and metadataArtist:lower() or ""
+						-- Check and use filename if there is no artist tag
+						local lower_metadataArtist_split = false
+						for part in string.gmatch(lower_metadataArtist, '([^,;& ]+)') do
+							if part:match("^%s*(.-)%s*$") == lower_artist:match("^%s*(.-)%s*$") then
+								lower_artist_split_match = true
+								break
+							end
+						end
+						if lower_artist_split_match or lower_artist == lower_metadataArtist or mp.get_property_native("metadata/by-key/Album_Artist"):lower() == lower_artist then
+							local cover_id_or_url = catalogs[i].cover_id_or_url
+							if cover_id_or_url.match(cover_id_or_url, "^https?://[%w-_%.%?%.:%/%+=&]+$") then
+								largeImageKey = cover_id_or_url
+							else largeImageKey = ("cover_%s"):format(cover_id_or_url):gsub("[^%w%- ]", "_"):lower()
+							end
+							largeImageText = album[v]
+							found_exact_album = true
+							break
+						end
+					end
+				end
+			end
+			if found_exact_album then
+				break
 			end
 		end
 	end
@@ -183,19 +252,36 @@ local function main()
 			largeImageText = url
 		elseif o.hide_url == "yes" then
 			largeImageKey = "mpv_stream"
-			-- will use mpv_version set previously
 		end
-		-- checking site: YouTube, Crunchyroll, SoundCloud, LISTEN.moe
-		if string.match(url, "www.youtube.com/watch%?v=([a-zA-Z0-9-_]+)&?.*$") ~= nil or string.match(url, "youtu.be/([a-zA-Z0-9-_]+)&?.*$") ~= nil then
-			largeImageKey = "youtube"	-- alternative "youtube_big" or "youtube-2"
+		if string.match(url, "www.youtube.com/watch%?v=([a-zA-Z0-9-_]+)&?.*$") ~= nil or string.match(url, "youtu.be/([a-zA-Z0-9-_]+)&?.*$") ~= nil or string.match(url, ".googlevideo.com/") ~= nil then
+			--largeImageKey = "youtube"	-- alternative "youtube_big" or "youtube-2"
+			largeImageKey = "youtube"
 			largeImageText = "YouTube"
+		elseif string.match(url, "music.youtube.com/") ~= nil then
+			largeImageKey = "youtubemusic"
+			largeImageText = "YouTube Music"
+		--[[
 		elseif string.match(url, "www.crunchyroll.com/.+/.*-([0-9]+)??.*$") ~= nil then
 			largeImageKey = "crunchyroll"	-- alternative "crunchyroll_big"
 			largeImageText = "Crunchyroll"
 		elseif string.match(url, "soundcloud.com/.+/.*$") ~= nil then
 			largeImageKey = "soundcloud"	-- alternative "soundcloud_big"
 			largeImageText = "SoundCloud"
+		elseif string.match(url, "ice42%.securenetsystems%.net/SUAVE%?playSessionID=") ~= nil then
+			largeImageKey = "https://tinyurl.com/ESJRadio"
+            largeImageText = "El Sonido Joven Radio"
+		--]]
 		end
+	end
+
+	-- Allow to display number
+	if tonumber(largeImageText) then
+		largeImageText = "‍" .. largeImageText
+	end
+
+	if pause then
+		startTimestamp = nil
+	else startTimestamp = math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos"))))
 	end
 
 	-- set `presence`
@@ -203,36 +289,55 @@ local function main()
 		state = state,
 		details = details,
 		--startTimestamp = math.floor(startTime),
-		startTimestamp = math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos")))),
+		startTimestamp = startTimestamp,
 		--endTimestamp = math.floor(timeUp),
 		largeImageKey = largeImageKey,
 		largeImageText = largeImageText,
 		smallImageKey = smallImageKey,
-		smallImageText = smallImageText,
+		smallImageText = smallImageText
+		--[[
+		party_id = "",
+		party_size = 0,
+		party_max = 0,
+		match_secret = "",
+		join_secret = "",
+		spectate_secret = ""
+		--]]
 	}
 	if url ~= nil and stream == nil then
 		presence.state = "(Loading)"
-		presence.startTimestamp = math.floor(math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos")))))
+		presence.startTimestamp = math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos"))))
 		presence.endTimestamp = nil
 	end
+
+	--[[
 	if idle then
 		presence = {
 			state = presence.state,
 			details = presence.details,
-			startTimestamp = math.floor(math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos"))))),
+			startTimestamp = math.floor(timeNow - os.time(os.date("*t", mp.get_property("time-pos")))),
 			--endTimestamp = presence.endTimestamp,
 			largeImageKey = presence.largeImageKey,
 			largeImageText = presence.largeImageText,
 			smallImageKey = presence.smallImageKey,
 			smallImageText = presence.smallImageText
+			--
+			party_id = "",
+			party_size = 0,
+			party_max = 0,
+			match_secret = "",
+			join_secret = "",
+			spectate_secret = ""
+			--
 		}
 	end
+	--]]
 	
 	local appId = "1070587101088845875" --448016723057049601
 	-- run Rich Presence
 	if tostring(o.rpc_wrapper) == "lua-discordGameSDK" then
 	    local appId = 1070587101088845875LL --448016723057049601
-		discord_instance = gameSDK.initialize(app_id)
+		discord_instance = gameSDK.initialize(appId)
 		if o.active == "yes" then
 			presence.details = presence.details:len() > 127 and presence.details:sub(1, 127) or presence.details
 			discord_instance = gameSDK.updatePresence(discord_instance, presence)
@@ -289,7 +394,7 @@ mp.add_key_binding(o.key_toggle, "active-toggle", function()
 		mp.osd_message(("[%s] Status: %s"):format(mp.get_script_name(), status))
 		msg.info(string.format("Status: %s", status))
 	end,
-	{repeatable=false})
+	{ repeatable=false })
 
 -- run `main` function
 mp.add_timeout(5, function()

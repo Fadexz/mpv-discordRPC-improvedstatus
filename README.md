@@ -9,18 +9,29 @@ This modification of mpv-discordRPC provides a large modification of the status 
 
 | Type | Image |
 | :-: | :-: |
-| Playing (Profile) | ![Playing Profile](images/PlayingProfile.png)
-| Playing (Pop Out) | ![Playing Pop Out](images/PlayingPopOut.png)
-| Paused | ![Paused](images/PausedProfile.png)
-| Audio Only | ![Audio Only](images/AudioOnlyProfile.png)
-| Playing (Pop Out) (With Theme and GIF Image) | ![Playing Profile](images/PlayingPopOut2.gif)
+| Playing (Profile) | ![Playing Profile](images/readme-images/PlayingProfile.png)
+| Playing (Pop Out) | ![Playing Pop Out](images/readme-images/PlayingPopOut.png)
+| Paused | ![Paused](images/readme-images/PausedProfile.png)
+| Audio Only | ![Audio Only](images/readme-images/AudioOnlyProfile.png)
+| Playing (Pop Out) (With Theme and GIF Image) | ![Playing Profile](images/readme-images/PlayingPopOut2.gif)
  
  ‍
 
 ## Installation
 
-- Simply place the 'mpv-discordRPC' folder in your 'scripts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\scripts`)
-- Place the 'mpv_discordRPC.conf' in your 'script-opts' folder (`%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\script-opts`)
+- Simply place the 'status-line.lua' file and 'mpv-discordRPC' folder inside your 'scripts' folder (Windows: e.g `%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\scripts`)
+- Place 'discord-rpc.dll' and/or other libraries inside the mpv executable (e.g with 'mpv.exe') folder (Windows: e.g `%SystemDrive%\Program Files\mpv`)
+- Optional: Place the 'mpv_discordRPC.conf' inside your 'script-opts' folder (Windows: e.g `%SystemDrive%\Users\%Username%\AppData\Roaming\mpv\script-opts`)
+
+Note: You will not need the any other files for it to function
+ 
+ ‍
+
+## Usage
+
+- Optional: Add cover art (including metadata) inside scripts/mpv-discordRPC/catalogs.lua
+- Run 'mpv.exe' or a shortcut to it, wait after a short delay and mpv should display as a playing game activity (as long as it hasn't been disabled to display in the Discord settings)
+- Use 'D' key (or e.g hold 'SHIFT' and press 'D') to toggle the apperance of the RPC in Discord
  
  ‍
 
@@ -90,15 +101,15 @@ For more description read below.
 
 | Description | Image |
 | :-: | :-: |
-| Idle | ![Idle](images/idle.png)
-| Playing | ![Playing](images/playing.png)
-| Paused | ![Paused](images/paused.png)
-| Info: playlist and loop | ![Info: playlist and loop](images/info.png)
-| Cover art | ![Cover art](images/coverart.png)
-| YouTube playing | ![YouTube playing](images/playing_youtube.png)
-| Crunchyroll paused  | ![Crunchyroll paused](images/paused_crunchyroll.png)
-| SoundCloud playing | ![SoundCloud playing](images/playing_soundcloud.png)
-| LISTEN.moe paused  | ![LISTEN.moe paused](images/paused_listen_moe.png)
+| Idle | ![Idle](images/readme-images/idle.png)
+| Playing | ![Playing](images/readme-images/playing.png)
+| Paused | ![Paused](images/readme-images/paused.png)
+| Info: playlist and loop | ![Info: playlist and loop](images/readme-images/info.png)
+| Cover art | ![Cover art](images/readme-images/coverart.png)
+| YouTube playing | ![YouTube playing](images/readme-images/playing_youtube.png)
+| Crunchyroll paused  | ![Crunchyroll paused](images/readme-images/paused_crunchyroll.png)
+| SoundCloud playing | ![SoundCloud playing](images/readme-images/playing_soundcloud.png)
+| LISTEN.moe paused  | ![LISTEN.moe paused](images/readme-images/paused_listen_moe.png)
 
 ---
 
