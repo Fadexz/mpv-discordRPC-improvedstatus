@@ -29,9 +29,11 @@ Note: You will not need the any other files for it to function
 
 ## Usage
 
-- Optional: Add cover art (including metadata) inside scripts/mpv-discordRPC/catalogs.lua
 - Run 'mpv.exe' or a shortcut to it, wait after a short delay and mpv should display as a playing game activity (as long as it hasn't been disabled to display in the Discord settings)
 - Use 'D' key (or e.g hold 'SHIFT' and press 'D') to toggle the apperance of the RPC in Discord
+- Optional: Add cover art (including metadata) inside scripts/mpv-discordRPC/catalogs.lua
+
+Note: When ProRes video is detected ffprobe will attempt to run (opens a command-line window) to gather which type of ProRes codec it is, make sure your ffmepg folder is in the enviromental variables in Windows for it to find it.
  
  ‍
 
